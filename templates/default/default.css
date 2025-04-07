@@ -1,0 +1,291 @@
+:root {
+    --column-gap: 0.5em;
+    --column-width: 250px;
+
+    --background-light: #EEEEEE;
+    --background-dark: #191919;
+    --text-light: #373A40;
+    --text-dark: #ECDBBA;
+    --anchor-light: #DC5F00;
+    --anchor-dark: #C84B31;
+    --metadata-light: #686D76;
+    --metadata-dark: #2D4263;
+}
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: var(--background-dark);
+        color: var(--text-dark);
+    }
+    a {
+        color: var(--anchor-dark);
+    }
+    .gallery img:hover {
+        filter: brightness(80%);
+    }
+}
+@media (prefers-color-scheme: light) {
+    body {
+        background-color: var(--background-light);
+        color: var(--text-light);
+    }
+    a {
+        color: var(--anchor-light);
+    }
+    .gallery img:hover {
+        filter: brightness(120%);
+    }
+}
+
+a {
+    text-decoration: none;
+    font-weight: bold;
+}
+a:hover {
+    text-decoration: underline;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    /*
+    flex-direction: column;
+    display: flex;
+    */
+    justify-content: center;
+    align-items: center;
+}
+
+#header {
+    margin-top: 20px;
+    text-align: right;
+    font-size: 200%;
+    font-weight: bold;
+    width: 90%;
+}
+
+#footer {
+    text-align: center;
+    width: 90%;
+    margin-top: 20px;
+    font-size: 80%;
+}
+
+#navigation {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 130%;
+}
+
+/* Rename this to #path ? */
+#directories {
+    width: 90%;
+    text-align: left;
+    margin-bottom: 20px;
+    font-size: 110%;
+}
+
+.content {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.gallery {
+    width: 90%;
+    -webkit-column-width: var(--column-width);
+    -moz-column-width: var(--column-width);
+    column-width: var(--column-width);
+    -webkit-column-gap: var(--column-gap);
+    -moz-column-gap: var(--column-gap);
+    column-gap: var(--column-gap);
+    text-align: center;
+}
+.gallery img {
+    width: 100% !important;
+    height: auto !important;
+    margin-bottom: 0.5em;
+}
+
+/*
+.gallery svg {
+    filter: drop-shadow(3px 5px 2px rgb(0 0 0 / 0.4));
+}
+*/
+
+/*
+.folder {
+    background-image: url("folder.svg");
+    background-repeat: no-repeat;
+    background-size: 250px 250px;
+    width: 100% !important;
+    height: 250px !important;
+    background-position: center;
+    margin-bottom: 0.5em;
+    text-wrap: balance;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+    */
+#folders {
+    width: 90%;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+
+    -webkit-column-width: var(--column-width);
+    -moz-column-width: var(--column-width);
+    column-width: var(--column-width);
+    -webkit-column-gap: var(--column-gap);
+    -moz-column-gap: var(--column-gap);
+    column-gap: var(--column-gap);
+    text-align: center;
+    margin-bottom: 2em;
+}
+#folders span {
+    width: 200px;
+    padding: 1em;
+}
+
+
+/*
+@media only screen and (max-width: 900px) {
+    .gallery {
+        -webkit-column-count: 4;
+        -moz-column-count: 4;
+        column-count: 4;
+    }
+}
+
+@media only screen and (max-width: 700px) {
+    .gallery {
+        -webkit-column-count: 3;
+        -moz-column-count: 3;
+        column-count: 3;
+    }
+}
+
+
+@media only screen and (max-width: 450px) {
+    .gallery {
+        -webkit-column-count: 2;
+        -moz-column-count: 2;
+        column-count: 2;
+    }
+}
+    */
+.lightbox {
+    /* Default to hidden */
+    display: none;
+
+    /* Overlay entire screen */
+    position: fixed;
+    z-index: 999;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    /* A bit of padding around image */
+    padding: 1em;
+
+    /* Translucent background */
+    background: rgba(0, 0, 0, 0.9);
+}
+/* Unhide the lightbox when it's the target */
+.lightbox:target {
+    display: block;
+}
+.lightbox span {
+    /* Full width and height */
+    display: block;
+    width: 100%;
+    height: 100%;
+
+    /* Size and position background image */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+
+/* DELETE THIS
+
+.folders {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 0.5em;
+    padding: 1em;
+}
+
+.folder-container {
+	display: table-cell;
+	justify-content: center;
+	align-items: center;
+    width: 100% !important;
+    height: auto !important;
+    margin-bottom: 0.5em;
+    padding: 1em;
+}
+
+.folder {
+	width: 300px;
+	height: 225px;
+	background: linear-gradient(to top, #1e5799 0%,#2989d8 50%,#7db9e8 100%);
+	position: relative;
+	border-radius: 8px;
+	text-align: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.folder::before {
+	position: absolute;
+	left: 0;
+	content: '';
+	height: 25px;
+	width: 280px;
+	background-color: #7db9e8;
+	z-index: -2;
+	top: -25px;
+	box-shadow: inset 0 -10px 10px rgba(0,0,0,0.2);
+	margin-left: 10px;
+	border-top-left-radius: 15px;
+	border-top-right-radius: 15px;
+}
+
+.folder::after {
+	position: absolute;
+	left: 0;
+	content: '';
+	z-index: -1;
+	background-color: #fff;
+	width: 260px;
+	height: 25px;
+	top: -15px;
+	margin-left: 20px;
+	box-shadow: 0 0 2px rgba(0,0,0,0.2);
+}
+*/
+
+/*
+.text {
+	font-size: 48px;
+	color: #fff;
+	font-family: 'Varela';
+}
+*/
+
+
+
+
+
+

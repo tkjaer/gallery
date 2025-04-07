@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ .Name }}</title>
+    <link rel="stylesheet" href="/default.css">
+    <script src="/default.js"></script>
+</head>
+<body>
+    <div class="content">
+        <div id="header">{{ .Name }}</div>
+        <div id="directories">
+            <a href="/">🏠</a>{{ if .Directories }}{{ range .Directories }} &raquo; <a href="/{{.Path}}/">{{.Name}}</a>{{ end }}{{ end }}
+        </div>
+{{- if .Folders }}
+            <div id="folders">
+{{- range .Folders }}
+                <span><a href="{{ . }}/"><img src="/folder.svg"><br />{{ . }}</a><br /></span>
+{{- end }}
+            </div>
+{{- end }}
+{{- if .Images }}
+        <div class="gallery">
+    {{- range .Images }}
+            <a href="#img-{{ .Index }}"><img src="thumb_{{ .File }}" alt="{{ .Description }}"><br /></a>
+    {{- end }}
+        </div>
+{{- end }}
+        <div id="footer">
+            <p>&copy; {{ .Year }}{{ if .Copyright }} by {{ .Copyright }}{{end}}</p>
+        </div>
+    </div>
+{{- if .Images }}
+    <div id="lightbox_images">
+    {{- range .Images }}
+        <a href="#" class="lightbox" id="img-{{ .Index }}"><span style="background-image:url('full_{{ .File }}')"></span></a>
+    {{- end }}
+    </div>
+{{- end }}
+</body>
+</html>
