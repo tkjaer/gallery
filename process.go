@@ -38,8 +38,8 @@ func processHTMLFile(index string, originalContent *DirMap) error {
 	log.Printf("Processing index %s", index)
 
 	dirContent := (*originalContent)[index]
-	imagePath := strings.Trim(index, config.Originals)
-	imagePath = strings.Trim(imagePath, "/")
+	imagePath := strings.TrimPrefix(index, config.Originals)
+	imagePath = strings.TrimPrefix(imagePath, "/")
 	outputDir := filepath.Join(config.Output, imagePath)
 	outputFile := filepath.Join(outputDir, "index.html")
 
@@ -159,7 +159,7 @@ func copyFile(source, destination string) error {
 func processImage(file string, config Config) error {
 	// log.Printf("Processing image %s", file)
 	imgName := filepath.Base(file)
-	outputDir := filepath.Join(config.Output, filepath.Dir(strings.TrimLeft(file, config.Originals)))
+	outputDir := filepath.Join(config.Output, filepath.Dir(strings.TrimPrefix(file, config.Originals)))
 
 	img, err := imgio.Open(file)
 	if err != nil {
@@ -205,7 +205,7 @@ func getUpdates(originalContent DirMap, outputContent outputMap) ([]string, []st
 	fileUpdates := []string{}
 	for origPath, origDetails := range originalContent {
 		indexUpdateNeeded := true
-		if outPath, ok := outputContent[config.Output+strings.Trim(origPath, config.Originals)]; ok {
+		if outPath, ok := outputContent[config.Output+strings.TrimPrefix(origPath, config.Originals)]; ok {
 			if outPath.After(origDetails.ModTime) {
 				indexUpdateNeeded = false
 			}
@@ -219,7 +219,7 @@ func getUpdates(originalContent DirMap, outputContent outputMap) ([]string, []st
 			for _, outputSize := range []string{"thumb", "full"} {
 				o := filepath.Join(
 					config.Output,
-					filepath.Dir(strings.Trim(origFilePath, config.Originals)),
+					filepath.Dir(strings.TrimPrefix(origFilePath, config.Originals)),
 					outputSize+"_"+origFileDetails.Name,
 				)
 				if outFilePath, ok := outputContent[o]; ok {
