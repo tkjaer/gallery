@@ -30,6 +30,18 @@ type Dir struct {
 // of files and subdirectories as the value.
 type DirMap map[string]Dir
 
+// AddDir adds a new directory to the DirMap. If the directory already exists, it does nothing.
+func (dm DirMap) AddDir(path string, name string, modTime time.Time) {
+	if _, exists := dm[path]; !exists {
+		dm[path] = Dir{
+			Name:    name,
+			ModTime: modTime,
+			Files:   make(map[string]File),
+			SubDirs: make(map[string]SubDir),
+		}
+	}
+}
+
 // outputMap is a map of the output directory, with the path as the key, and the
 // modification time as the value.
 type outputMap map[string]time.Time
@@ -61,6 +73,7 @@ func getOriginalContent() (DirMap, error) {
 			return err
 		}
 		name := d.Name()
+		parentDir := filepath.Dir(path)
 		fileInfo, err := d.Info()
 		if err != nil {
 			return err
@@ -68,22 +81,18 @@ func getOriginalContent() (DirMap, error) {
 		modTime := fileInfo.ModTime()
 
 		if d.IsDir() {
-			if _, ok := results[path]; !ok {
-				results[path] = Dir{
-					Name:    name,
-					ModTime: modTime,
-					Files:   make(map[string]File),
-					SubDirs: make(map[string]SubDir),
-				}
-			}
-			if d.Name() != config.Originals {
-				results[filepath.Dir(path)].SubDirs[path] = SubDir{
+			results.AddDir(path, name, modTime)
+			// As filepath.WalkDir returns files in lexicographical order, we can
+			// safely assume that the parent directory has already been added to
+			// the results map, unless the parent directory is config.Originals.
+			if _, ok := results[parentDir]; ok {
+				results[parentDir].SubDirs[path] = SubDir{
 					Name: name,
 				}
 			}
 		} else {
 			if strings.HasSuffix(name, ".jpg") || strings.HasSuffix(name, ".jpeg") {
-				results[filepath.Dir(path)].Files[path] = File{
+				results[parentDir].Files[path] = File{
 					Name:    name,
 					ModTime: modTime,
 				}
