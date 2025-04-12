@@ -173,7 +173,7 @@ func processImage(file string, config Config) error {
 	thumbWidth := config.ThumbSize
 	thumbHeight := int(float64(thumbWidth) / aspectRatio)
 
-	err = os.MkdirAll(filepath.Dir(outputDir), 0755)
+	err = os.MkdirAll(outputDir, 0755)
 	if err != nil {
 		return err
 	}
