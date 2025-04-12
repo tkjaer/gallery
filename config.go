@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"log"
+	"log/slog"
 	"os"
 
 	"gopkg.in/yaml.v3"
@@ -27,6 +27,7 @@ var config Config
 // LoadConfig loads the configuration from a file.
 func LoadConfig(filename string) error {
 	// Initialize config with default values
+	slog.Debug("Loading config file", "filename", filename)
 	config = Config{
 		Name:          "Photo Gallery",
 		Copyright:     "",
@@ -44,17 +45,20 @@ func LoadConfig(filename string) error {
 	data, err := os.ReadFile(filename)
 	if err != nil {
 		if os.IsNotExist(err) {
-			log.Printf("No config file found, using defaults")
+			slog.Info("No config file found, using defaults")
 			return nil
 		} else {
 			return err
 		}
 	}
 
+	slog.Debug("Config file found, parsing", "filename", filename)
 	err = yaml.Unmarshal(data, &config)
 	if err != nil {
 		return err
 	}
+
+	slog.Debug("Config file parsed successfully", "config", config)
 	if config.Originals == config.Output {
 		return fmt.Errorf("the \"originals\" and \"output\" directories cannot be the same")
 	}
