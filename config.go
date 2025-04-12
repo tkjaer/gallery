@@ -22,25 +22,30 @@ type Config struct {
 	GalleryPath   string `yaml:"gallery_path" default:"/"`
 }
 
-var config = Config{
-	Name:          "Photo Gallery",
-	Originals:     "originals",
-	Output:        "output",
-	Template:      "default",
-	ThumbSize:     200,
-	FullSize:      2000,
-	CopyOriginals: false,
-	NewestFirst:   true,
-	JPEGQuality:   90,
-	GalleryPath:   "/",
-}
+var config Config
 
 // LoadConfig loads the configuration from a file.
 func LoadConfig(filename string) error {
+	// Initialize config with default values
+	config = Config{
+		Name:          "Photo Gallery",
+		Copyright:     "",
+		Originals:     "originals",
+		Output:        "output",
+		Template:      "default",
+		ThumbSize:     200,
+		FullSize:      2000,
+		CopyOriginals: false,
+		NewestFirst:   true,
+		JPEGQuality:   90,
+		GalleryPath:   "/",
+	}
+
 	data, err := os.ReadFile(filename)
 	if err != nil {
 		if os.IsNotExist(err) {
 			log.Printf("No config file found, using defaults")
+			return nil
 		} else {
 			return err
 		}
