@@ -131,14 +131,16 @@ func processImages(fileUpdates []string) error {
 	}
 	slog.Info("Processing images")
 
-	runtime.GOMAXPROCS(runtime.NumCPU())
-	slog.Debug("Using CPU cores", "numCPU", runtime.NumCPU())
 	wg := &sync.WaitGroup{}
 	slog.Debug("Creating wait group", "waitGroup", wg)
-	wg.Add(len(fileUpdates))
+	// Limit the number of concurrent goroutines to the number of CPU cores
+	sem := make(chan struct{}, runtime.NumCPU())
 	for _, file := range fileUpdates {
+		wg.Add(1)
+		sem <- struct{}{}
 		go func(file string) {
 			defer wg.Done()
+			defer func() { <-sem }()
 			err := processImage(file, config)
 			if err != nil {
 				slog.Warn("Failed to process image", "error", err)
