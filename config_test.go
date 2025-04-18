@@ -17,7 +17,7 @@ func TestLoadConfig_Defaults(t *testing.T) {
 		ThumbSize:     200,
 		FullSize:      2000,
 		CopyOriginals: false,
-		NewestFirst:   true,
+		ImageOrder:    "old",
 		JPEGQuality:   90,
 		GalleryPath:   "/",
 	}
@@ -34,7 +34,7 @@ func TestLoadConfig_Defaults(t *testing.T) {
 	assert.Equal(t, 200, config.ThumbSize)
 	assert.Equal(t, 2000, config.FullSize)
 	assert.Equal(t, false, config.CopyOriginals)
-	assert.Equal(t, true, config.NewestFirst)
+	assert.Equal(t, "new", config.ImageOrder)
 	assert.Equal(t, 90, config.JPEGQuality)
 	assert.Equal(t, "/", config.GalleryPath)
 }
@@ -53,7 +53,7 @@ template: custom
 thumbnail_size: 150
 full_size: 1200
 copy_originals: true
-newest_first: false
+image_order: old
 jpeg_quality: 80
 gallery_path: /test
 `
@@ -73,7 +73,7 @@ gallery_path: /test
 	assert.Equal(t, 150, config.ThumbSize)
 	assert.Equal(t, 1200, config.FullSize)
 	assert.Equal(t, true, config.CopyOriginals)
-	assert.Equal(t, false, config.NewestFirst)
+	assert.Equal(t, "old", config.ImageOrder)
 	assert.Equal(t, 80, config.JPEGQuality)
 	assert.Equal(t, "/test", config.GalleryPath)
 }

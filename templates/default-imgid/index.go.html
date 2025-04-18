@@ -11,7 +11,7 @@
     <div class="content">
         <div id="header">{{ .Name }}</div>
         <div id="directories">
-            <a href="/">🏠</a>{{ if .Directories }}{{ range .Directories }} &raquo; <a href="/{{.Path}}/">{{.Name}}</a>{{ end }}{{ end }}
+            <a href="/">🏠</a>{{ if .Navigation }}{{ range .Navigation }} &raquo; <a href="/{{.Path}}/">{{.Name}}</a>{{ end }}{{ end }}
         </div>
 {{- if .Folders }}
             <div id="folders">
