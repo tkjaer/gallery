@@ -17,7 +17,7 @@ type Config struct {
 	ThumbSize     int    `yaml:"thumbnail_size" default:"200"`
 	FullSize      int    `yaml:"full_size" default:"2000"`
 	CopyOriginals bool   `yaml:"copy_originals" default:"false"`
-	NewestFirst   bool   `yaml:"newest_first" default:"true"`
+	ImageOrder    string `yaml:"image_order" default:"new"`
 	JPEGQuality   int    `yaml:"jpeg_quality" default:"90"`
 	GalleryPath   string `yaml:"gallery_path" default:"/"`
 }
@@ -37,7 +37,7 @@ func LoadConfig(filename string) error {
 		ThumbSize:     200,
 		FullSize:      2000,
 		CopyOriginals: false,
-		NewestFirst:   true,
+		ImageOrder:    "new",
 		JPEGQuality:   90,
 		GalleryPath:   "/",
 	}
@@ -56,6 +56,11 @@ func LoadConfig(filename string) error {
 	err = yaml.Unmarshal(data, &config)
 	if err != nil {
 		return err
+	}
+
+	// Validate that ImageOrder is one of the allowed values ("new", "old", "alphabetical")
+	if config.ImageOrder != "new" && config.ImageOrder != "old" && config.ImageOrder != "alphabetical" {
+		return fmt.Errorf("invalid image order: %s, must be one of: new, old, alphabetical", config.ImageOrder)
 	}
 
 	slog.Debug("Config file parsed successfully", "config", config)
