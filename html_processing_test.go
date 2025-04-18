@@ -66,24 +66,20 @@ func TestProcessHTMLFile(t *testing.T) {
 
 	// Send the task to the channel
 	htmlTasks <- htmlTask
-	t.Log("Sent HTML task to channel:", htmlTask)
 
 	close(done)
 	// Wait for the goroutine to finish
 	wg.Wait()
-	t.Log("HTML processing completed")
 
 	// Verify the output directory was created
 	outputDir := filepath.Join(config.Output, "test")
 	_, err = os.Stat(outputDir)
 	assert.NoError(t, err)
-	t.Log("Output directory created:", outputDir)
 
 	// Verify the output file was created
 	outputFile := filepath.Join(outputDir, "index.html")
 	_, err = os.Stat(outputFile)
 	assert.NoError(t, err)
-	t.Log("Output file created:", outputFile)
 
 	// Verify the content of the output file
 	content, err := os.ReadFile(outputFile)
@@ -153,7 +149,6 @@ func TestProcessHTMLFileWithNewestFirst(t *testing.T) {
 		},
 	}
 
-	t.Log("Sending HTML task to channel:", htmlTask)
 	// Send the task to the channel
 	htmlTasks <- htmlTask
 
