@@ -49,6 +49,7 @@ func TestProcessHTMLFile(t *testing.T) {
 	var wg sync.WaitGroup
 
 	// Start the processHTMLFile function in a goroutine
+	wg.Add(1)
 	go processHTMLFile(htmlTasks, &wg, done)
 
 	// Create a mock HTML task
@@ -64,7 +65,6 @@ func TestProcessHTMLFile(t *testing.T) {
 	}
 
 	// Send the task to the channel
-	wg.Add(1)
 	htmlTasks <- htmlTask
 	t.Log("Sent HTML task to channel:", htmlTask)
 
@@ -132,6 +132,7 @@ func TestProcessHTMLFileWithNewestFirst(t *testing.T) {
 	var wg sync.WaitGroup
 
 	// Start the processHTMLFile function in a goroutine
+	wg.Add(1)
 	go processHTMLFile(htmlTasks, &wg, done)
 
 	// Create a mock HTML task
@@ -154,7 +155,6 @@ func TestProcessHTMLFileWithNewestFirst(t *testing.T) {
 
 	t.Log("Sending HTML task to channel:", htmlTask)
 	// Send the task to the channel
-	wg.Add(1)
 	htmlTasks <- htmlTask
 
 	close(done)

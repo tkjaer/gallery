@@ -35,12 +35,14 @@ func process() error {
 	// Start the image processing goroutines
 	for range numRoutines {
 		slog.Debug("Starting image processing goroutines", "numRoutines", numRoutines)
+		wg.Add(1)
 		go processImage(imageTasks, wg, done)
 	}
 
 	// Start the HTML processing goroutines
 	for range numRoutines {
 		slog.Debug("Starting HTML processing goroutines", "numRoutines", numRoutines)
+		wg.Add(1)
 		go processHTMLFile(htmlTasks, wg, done)
 	}
 
@@ -117,7 +119,6 @@ func process() error {
 					}
 				}
 				if needsUpdate {
-					wg.Add(1)
 					imageTasks <- path
 				}
 				slog.Debug("Adding file to directory index", "path", path, "name", name)
@@ -141,7 +142,6 @@ func process() error {
 			slog.Debug("Processing directory", "dir", dir)
 			if len(dir.Files) > 0 || len(dir.SubDirs) > 0 {
 				slog.Debug("Adding directory to HTML tasks", "dir", dir)
-				wg.Add(1)
 				htmlTasks <- dir
 			}
 		}
