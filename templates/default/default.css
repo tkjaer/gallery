@@ -159,3 +159,23 @@ body {
     background-repeat: no-repeat;
     background-size: contain;
 }
+
+@media (max-width: 600px) {
+    :root {
+        --column-width: 120px;
+        --column-gap: 0.5em;
+    }
+    #header {
+        font-size: 150%;
+        text-align: center;
+    }
+    #folders span img {
+        width: 100% !important;
+        height: auto !important;
+        padding: 0.5em;
+    }
+    #folders span {
+        width: 140px;
+        padding: 0.5em;
+    }
+}
