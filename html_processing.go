@@ -15,6 +15,7 @@ import (
 // output directory.
 func processHTMLFile(htmlTasks <-chan Dir, wg *sync.WaitGroup, done <-chan struct{}) {
 	slog.Debug("Starting processHTML goroutine")
+	defer wg.Done()
 
 	tpl, err := template.ParseGlob("templates/default/*.go.html")
 	if err != nil {
@@ -26,7 +27,6 @@ func processHTMLFile(htmlTasks <-chan Dir, wg *sync.WaitGroup, done <-chan struc
 	for {
 		select {
 		case htmlTask := <-htmlTasks:
-			defer wg.Done()
 			slog.Debug("Received HTML task", "htmlTask", htmlTask)
 
 			navigation := []NavigationElement{}

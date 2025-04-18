@@ -15,11 +15,11 @@ import (
 // It will resize the image, and copy it to the output directory.
 func processImage(imageTasks <-chan string, wg *sync.WaitGroup, done <-chan struct{}) {
 	slog.Debug("Starting processImage goroutine")
+	defer wg.Done()
 	var file string
 	for {
 		select {
 		case file = <-imageTasks:
-			defer wg.Done()
 			if file == "" {
 				slog.Debug("Received empty file path, skipping")
 				continue
