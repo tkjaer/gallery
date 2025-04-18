@@ -68,21 +68,22 @@ func process() error {
 
 		if d.IsDir() {
 			slog.Debug("Processing directory", "path", path, "name", name)
+			outputIndex := filepath.Join(outputDir, "index.html")
 
 			// Check if the output directory exists and if it's newer than the original directory
 			// If it doesn't exist or is older, we need to update the HTML file for it
-			outputDirInfo, err := os.Stat(outputDir)
+			outputIndexInfo, err := os.Stat(outputIndex)
 			if err != nil {
 				if os.IsNotExist(err) {
-					slog.Debug("Output directory does not exist", "outputDir", outputDir)
+					slog.Debug("Output index does not exist", "outputIndex", outputIndex)
 					needsUpdate = true
 				}
 			} else {
-				if modTime.After(outputDirInfo.ModTime()) {
-					slog.Debug("Original directory is newer", "originalDir", path, "outputDir", outputDir)
+				if modTime.After(outputIndexInfo.ModTime()) {
+					slog.Debug("Original directory is newer", "originalDir", path, "outputIndex", outputIndex)
 					needsUpdate = true
 				} else {
-					slog.Debug("Output directory is newer", "originalDir", path, "outputDir", outputDir)
+					slog.Debug("Output index is newer", "originalDir", path, "outputIndex", outputIndex)
 				}
 			}
 
