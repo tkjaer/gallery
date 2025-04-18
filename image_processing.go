@@ -71,7 +71,15 @@ func processImage(imageTasks <-chan string, wg *sync.WaitGroup, done <-chan stru
 				slog.Debug("Original file copied", "file", file)
 
 			} else {
-				full := transform.Resize(img, config.FullSize, config.FullSize, transform.Linear)
+				// calculate full size, depending on the aspect ratio and the config.FullSize
+				// config.FullSize designates the longest side of the image
+				fullWidth := config.FullSize
+				fullHeight := int(float64(config.FullSize) / aspectRatio)
+				if aspectRatio < 1 {
+					fullWidth = int(float64(config.FullSize) * aspectRatio)
+					fullHeight = config.FullSize
+				}
+				full := transform.Resize(img, fullWidth, fullHeight, transform.Linear)
 				slog.Debug("Full image resized", "fullSize", config.FullSize)
 				if err := imgio.Save(filepath.Join(outputDir, "full_"+imgName), full, imgio.JPEGEncoder(config.JPEGQuality)); err != nil {
 					slog.Error("Failed to save full image", "error", err)
