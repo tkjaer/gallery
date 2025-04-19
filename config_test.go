@@ -20,6 +20,7 @@ func TestLoadConfig_Defaults(t *testing.T) {
 		ImageOrder:    "old",
 		JPEGQuality:   90,
 		GalleryPath:   "/",
+		RSSFeed:       true,
 	}
 
 	// Call LoadConfig with a non-existent file
@@ -37,6 +38,7 @@ func TestLoadConfig_Defaults(t *testing.T) {
 	assert.Equal(t, "new", config.ImageOrder)
 	assert.Equal(t, 90, config.JPEGQuality)
 	assert.Equal(t, "/", config.GalleryPath)
+	assert.Equal(t, false, config.RSSFeed)
 }
 
 func TestLoadConfig_ValidFile(t *testing.T) {
@@ -56,6 +58,7 @@ copy_originals: true
 image_order: old
 jpeg_quality: 80
 gallery_path: /test
+rss_feed: false
 `
 	_, err = tempFile.Write([]byte(configContent))
 	assert.NoError(t, err)
@@ -76,6 +79,7 @@ gallery_path: /test
 	assert.Equal(t, "old", config.ImageOrder)
 	assert.Equal(t, 80, config.JPEGQuality)
 	assert.Equal(t, "/test", config.GalleryPath)
+	assert.Equal(t, false, config.RSSFeed)
 }
 
 func TestLoadConfig_MissingFile(t *testing.T) {
