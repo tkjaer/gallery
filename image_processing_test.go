@@ -30,12 +30,19 @@ func TestProcessImage(t *testing.T) {
 
 	// Set up channels and WaitGroup
 	imageTasks := make(chan string)
+	rssTasks := make(chan RSSItem)
+	rssDone := make(chan struct{})
 	done := make(chan struct{})
 	var wg sync.WaitGroup
+	var rssWg sync.WaitGroup
+
+	// Start the processRSSFeed function in a goroutine
+	rssWg.Add(1)
+	go processRSSFeed(rssTasks, &rssWg, rssDone)
 
 	// Start the processImage function in a goroutine
 	wg.Add(1)
-	go processImage(imageTasks, &wg, done)
+	go processImage(imageTasks, rssTasks, &wg, done)
 
 	// Add the image task to the channel
 	imageTasks <- originalImagePath
@@ -43,6 +50,8 @@ func TestProcessImage(t *testing.T) {
 
 	// Wait for the goroutine to finish
 	wg.Wait()
+	close(rssDone)
+	rssWg.Wait()
 
 	// Verify that the output directory was created
 	outputDir := filepath.Join(config.Output, filepath.Dir(strings.TrimPrefix(originalImagePath, config.Originals)))
@@ -82,12 +91,19 @@ func TestProcessImageWithCopyOriginals(t *testing.T) {
 
 	// Set up channels and WaitGroup
 	imageTasks := make(chan string, 1)
+	rssTasks := make(chan RSSItem)
 	done := make(chan struct{})
+	rssDone := make(chan struct{})
 	var wg sync.WaitGroup
+	var rssWg sync.WaitGroup
+
+	// Start the processRSSFeed function in a goroutine
+	rssWg.Add(1)
+	go processRSSFeed(rssTasks, &rssWg, rssDone)
 
 	// Start the processImage function in a goroutine
 	wg.Add(1)
-	go processImage(imageTasks, &wg, done)
+	go processImage(imageTasks, rssTasks, &wg, done)
 
 	// Add the image task to the channel
 	imageTasks <- originalImagePath
@@ -96,6 +112,8 @@ func TestProcessImageWithCopyOriginals(t *testing.T) {
 
 	// Wait for the goroutine to finish
 	wg.Wait()
+	close(rssDone)
+	rssWg.Wait()
 
 	// Verify that the output directory was created
 	outputDir := filepath.Join(config.Output, filepath.Dir(strings.TrimPrefix(originalImagePath, config.Originals)))

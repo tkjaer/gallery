@@ -5,8 +5,10 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"sync"
+	"time"
 )
 
 // process walks the original directory, processes images, and generates HTML files for each directory.
@@ -19,9 +21,13 @@ func process() error {
 		os.Exit(1)
 	}
 
+	numRoutines := runtime.NumCPU()
+
 	done := make(chan struct{})
+	rssDone := make(chan struct{})
 	imageTasks := make(chan string)
 	htmlTasks := make(chan Dir)
+	rssTasks := make(chan RSSItem, numRoutines)
 
 	defer close(imageTasks)
 	defer close(htmlTasks)
@@ -29,14 +35,14 @@ func process() error {
 	wg := &sync.WaitGroup{}
 	slog.Debug("Created wait group", "waitGroup", wg)
 
-	// numRoutines := runtime.NumCPU()
-	numRoutines := 1
+	rssWg := &sync.WaitGroup{}
+	slog.Debug("Created RSS wait group", "waitGroup", rssWg)
 
 	// Start the image processing goroutines
 	for range numRoutines {
 		slog.Debug("Starting image processing goroutines", "numRoutines", numRoutines)
 		wg.Add(1)
-		go processImage(imageTasks, wg, done)
+		go processImage(imageTasks, rssTasks, wg, done)
 	}
 
 	// Start the HTML processing goroutines
@@ -45,6 +51,11 @@ func process() error {
 		wg.Add(1)
 		go processHTMLFile(htmlTasks, wg, done)
 	}
+
+	// Start the RSS feed processing goroutine
+	slog.Debug("Starting RSS feed processing goroutine")
+	rssWg.Add(1)
+	go processRSSFeed(rssTasks, rssWg, rssDone)
 
 	galleryContent := DirMap{}
 	// Walk the original directory and send image tasks to the channel
@@ -60,6 +71,9 @@ func process() error {
 			return err
 		}
 		modTime := fileInfo.ModTime()
+
+		thumbSize := int64(0)
+		thumbModTime := time.Time{}
 
 		parentDir := filepath.Dir(path)
 		outputDir := filepath.Join(config.Output, strings.TrimPrefix(parentDir, config.Originals))
@@ -116,11 +130,31 @@ func process() error {
 							needsUpdate = true
 						} else {
 							slog.Debug("Output file is newer", "originalFile", path, "outputFile", outputFile)
+							if size == "thumb" {
+								thumbSize = outputFileInfo.Size()
+								thumbModTime = outputFileInfo.ModTime()
+							}
 						}
 					}
 				}
 				if needsUpdate {
 					imageTasks <- path
+				} else {
+					// Add the file to the RSS feed if it exists and we know the thumbnail size
+					// If the thumbnail size is 0, processImage will add it to the RSS feed instead
+					URL := filepath.Join(config.GalleryURL, config.GalleryPath, strings.TrimPrefix(outputDir, config.Output))
+					rssTasks <- RSSItem{
+						Title:       name,
+						Description: "Thumbnail for " + name,
+						Link:        filepath.Join(URL, "thumb_"+name),
+						PubDate:     thumbModTime.Format(time.RFC1123Z),
+						GUID:        filepath.Join(URL, "#"+name),
+						Enclosure: RSSItemEnclosure{
+							URL:    filepath.Join(URL, "#"+name),
+							Length: thumbSize,
+							Type:   "image/jpeg",
+						},
+					}
 				}
 				slog.Debug("Adding file to directory index", "path", path, "name", name)
 				galleryContent[parentDir].Files[path] = File{
@@ -148,8 +182,17 @@ func process() error {
 		}
 	}
 
+	// Close the image and HTML done channel
+	slog.Debug("Closing image tasks channel")
 	close(done)
+	slog.Debug("Waiting for image tasks to finish")
 	wg.Wait()
+
+	// Close the RSS done channel once all image tasks are done
+	slog.Debug("Closing RSS tasks channel")
+	close(rssDone)
+	slog.Debug("Waiting for RSS tasks to finish")
+	rssWg.Wait()
 
 	err = updateTemplateFiles()
 	if err != nil {
