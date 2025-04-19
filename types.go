@@ -15,6 +15,32 @@ type Folders struct {
 	Folders []string
 }
 
+type RSSItemEnclosure struct {
+	URL    string
+	Type   string
+	Length int64
+}
+
+type RSSItem struct {
+	Title       string
+	Description string
+	Link        string
+	PubDate     string
+	GUID        string
+	Enclosure   RSSItemEnclosure
+}
+
+type RSSFeed struct {
+	Title         string
+	Description   string
+	Link          string
+	Copyright     string
+	AtomLink      string
+	Language      string
+	LastBuildDate string
+	Items         []RSSItem
+}
+
 // Image represents an image file, with a description, a file name, a path, and metadata.
 type Image struct {
 	Description string

@@ -20,6 +20,8 @@ type Config struct {
 	ImageOrder    string `yaml:"image_order" default:"new"`
 	JPEGQuality   int    `yaml:"jpeg_quality" default:"90"`
 	GalleryPath   string `yaml:"gallery_path" default:"/"`
+	GalleryURL    string `yaml:"gallery_url" default:""`
+	RSSFeed       bool   `yaml:"rss_feed" default:"false"`
 }
 
 var config Config
@@ -40,6 +42,8 @@ func LoadConfig(filename string) error {
 		ImageOrder:    "new",
 		JPEGQuality:   90,
 		GalleryPath:   "/",
+		GalleryURL:    "",
+		RSSFeed:       false,
 	}
 
 	data, err := os.ReadFile(filename)
@@ -61,6 +65,20 @@ func LoadConfig(filename string) error {
 	// Validate that ImageOrder is one of the allowed values ("new", "old", "alphabetical")
 	if config.ImageOrder != "new" && config.ImageOrder != "old" && config.ImageOrder != "alphabetical" {
 		return fmt.Errorf("invalid image order: %s, must be one of: new, old, alphabetical", config.ImageOrder)
+	}
+
+	// GalleryURL is required if RSSFeed is enabled
+	if config.RSSFeed && config.GalleryURL == "" {
+		return fmt.Errorf("gallery_url is required when rss_feed is enabled")
+	}
+	// Check that the GalleryURL looks just somewhat like a URL
+	// This is a very basic check, we might want to use a more robust URL validation
+	isValidURL := func(url string) bool {
+		return len(url) > 0 && (url[:7] == "http://" || url[:8] == "https://")
+	}
+	// Validate the GalleryURL if RSSFeed is enabled
+	if config.RSSFeed && !isValidURL(config.GalleryURL) {
+		return fmt.Errorf("invalid gallery_url: %s", config.GalleryURL)
 	}
 
 	slog.Debug("Config file parsed successfully", "config", config)

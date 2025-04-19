@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/anthonynsimon/bild/imgio"
 	"github.com/anthonynsimon/bild/transform"
@@ -13,7 +14,7 @@ import (
 
 // processImage is called when an image is found that needs to be processed.
 // It will resize the image, and copy it to the output directory.
-func processImage(imageTasks <-chan string, wg *sync.WaitGroup, done <-chan struct{}) {
+func processImage(imageTasks <-chan string, RSSTasks chan<- RSSItem, wg *sync.WaitGroup, done <-chan struct{}) {
 	slog.Debug("Starting processImage goroutine")
 	defer wg.Done()
 	var file string
@@ -86,6 +87,28 @@ func processImage(imageTasks <-chan string, wg *sync.WaitGroup, done <-chan stru
 					os.Exit(1)
 				}
 				slog.Debug("Full image saved", "fullFile", filepath.Join(outputDir, "full_"+imgName))
+			}
+
+			// Now that the image is processed, we can add it to the RSS feed
+
+			// Get the thumbnail file size
+			thumbFileInfo, err := os.Stat(filepath.Join(outputDir, "thumb_"+imgName))
+			if err != nil {
+				slog.Error("Failed to get thumbnail file info", "error", err)
+				os.Exit(1)
+			}
+			URL := filepath.Join(config.GalleryURL, config.GalleryPath, strings.TrimPrefix(outputDir, config.Output))
+			RSSTasks <- RSSItem{
+				Title:       imgName,
+				Description: "Thumbnail for " + imgName,
+				Link:        filepath.Join(URL, "thumb_"+imgName),
+				PubDate:     thumbFileInfo.ModTime().Format(time.RFC1123Z),
+				GUID:        filepath.Join(URL, "#"+imgName),
+				Enclosure: RSSItemEnclosure{
+					URL:    filepath.Join(URL, "#"+imgName),
+					Length: thumbFileInfo.Size(),
+					Type:   "image/jpeg",
+				},
 			}
 
 		case <-done:

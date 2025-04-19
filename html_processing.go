@@ -17,7 +17,7 @@ func processHTMLFile(htmlTasks <-chan Dir, wg *sync.WaitGroup, done <-chan struc
 	slog.Debug("Starting processHTML goroutine")
 	defer wg.Done()
 
-	tpl, err := template.ParseGlob("templates/default/*.go.html")
+	tpl, err := template.ParseGlob(filepath.Join("templates", config.Template, "index.go.html"))
 	if err != nil {
 		slog.Error("Failed to parse template", "error", err)
 		return
