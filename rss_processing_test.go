@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log/slog"
 	"os"
 	"path/filepath"
 	"sync"
@@ -10,17 +9,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 )
-
-func TestMain(m *testing.M) {
-	// Configure slog to output debug logs to the console
-	logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
-		Level: slog.LevelDebug, // Set log level to debug
-	}))
-	slog.SetDefault(logger)
-
-	// Run the tests
-	os.Exit(m.Run())
-}
 
 func TestProcessRSSFeed(t *testing.T) {
 	// Set up temporary directories for testing
