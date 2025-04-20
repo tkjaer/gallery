@@ -72,7 +72,6 @@ func process() error {
 		}
 		modTime := fileInfo.ModTime()
 
-		thumbSize := int64(0)
 		thumbModTime := time.Time{}
 
 		parentDir := filepath.Dir(path)
@@ -131,7 +130,6 @@ func process() error {
 						} else {
 							slog.Debug("Output file is newer", "originalFile", path, "outputFile", outputFile)
 							if size == "thumb" {
-								thumbSize = outputFileInfo.Size()
 								thumbModTime = outputFileInfo.ModTime()
 							}
 						}
@@ -142,18 +140,15 @@ func process() error {
 				} else {
 					// Add the file to the RSS feed if it exists and we know the thumbnail size
 					// If the thumbnail size is 0, processImage will add it to the RSS feed instead
-					URL := filepath.Join(config.GalleryURL, config.GalleryPath, strings.TrimPrefix(outputDir, config.Output))
+					baseURL := config.GalleryURL + filepath.Join(config.GalleryPath, strings.TrimPrefix(outputDir, config.Output))
+					imageURL := baseURL + "/#" + name
+					thumbURL := baseURL + "/thumb_" + name
 					rssTasks <- RSSItem{
 						Title:       name,
-						Description: "Thumbnail for " + name,
-						Link:        filepath.Join(URL, "thumb_"+name),
+						Description: "&lt;img src=\"" + thumbURL + "\" alt=\"" + name + "\" /&gt;",
+						Link:        imageURL,
 						PubDate:     thumbModTime.Format(time.RFC1123Z),
-						GUID:        filepath.Join(URL, "#"+name),
-						Enclosure: RSSItemEnclosure{
-							URL:    filepath.Join(URL, "#"+name),
-							Length: thumbSize,
-							Type:   "image/jpeg",
-						},
+						GUID:        imageURL,
 					}
 				}
 				slog.Debug("Adding file to directory index", "path", path, "name", name)

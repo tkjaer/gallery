@@ -97,18 +97,15 @@ func processImage(imageTasks <-chan string, RSSTasks chan<- RSSItem, wg *sync.Wa
 				slog.Error("Failed to get thumbnail file info", "error", err)
 				os.Exit(1)
 			}
-			URL := filepath.Join(config.GalleryURL, config.GalleryPath, strings.TrimPrefix(outputDir, config.Output))
+			baseURL := config.GalleryURL + filepath.Join(config.GalleryPath, strings.TrimPrefix(outputDir, config.Output))
+			imageURL := baseURL + "/#" + imgName
+			thumbURL := baseURL + "/thumb_" + imgName
 			RSSTasks <- RSSItem{
 				Title:       imgName,
-				Description: "Thumbnail for " + imgName,
-				Link:        filepath.Join(URL, "thumb_"+imgName),
+				Description: "%lt;img src=\"" + thumbURL + "\" alt=\"" + imgName + "\" /&gt;",
+				Link:        imageURL,
 				PubDate:     thumbFileInfo.ModTime().Format(time.RFC1123Z),
-				GUID:        filepath.Join(URL, "#"+imgName),
-				Enclosure: RSSItemEnclosure{
-					URL:    filepath.Join(URL, "#"+imgName),
-					Length: thumbFileInfo.Size(),
-					Type:   "image/jpeg",
-				},
+				GUID:        imageURL,
 			}
 
 		case <-done:
