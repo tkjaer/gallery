@@ -13,7 +13,7 @@
         <item>
             <title>{{.Title}}</title>
             <link>{{.Link}}</link>
-            <description><![CDATA[{{.Description}}]]></description>
+            <description>{{.Description}}</description>
             <pubDate>{{.PubDate}}</pubDate>
             <guid>{{.GUID}}</guid>
         </item>
