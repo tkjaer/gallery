@@ -19,9 +19,6 @@ Add a new line as well.
 
 ```
 and maybe a code block
-```
-
-```mermaid
 diagram
 TD
 top --> bottom
