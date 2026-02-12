@@ -15,3 +15,4 @@ A simple static gallery generator that takes a (nested) folder of images as inpu
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
