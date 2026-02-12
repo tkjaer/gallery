@@ -6,3 +6,7 @@ Maybe a mermaid diagram as well:
 ```
 
 And some text below it.
+
+## hello header 2
+
+And a \[link\]()
