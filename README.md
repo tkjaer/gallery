@@ -11,6 +11,9 @@ A simple static gallery generator that takes a (nested) folder of images as inpu
 - **RSS Feed Support**: Generate an RSS feed to notify users of new images.
 - **Configurable Image Sorting**: Sort images by newest, oldest, or alphabetical order.
 
+```mermaid
+```
+
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
