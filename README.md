@@ -9,4 +9,4 @@ And some text below it.
 
 ## hello header 2
 
-And a \[link\]()
+And a link <https://github.com/tkjaer/gallery/pull/15>
