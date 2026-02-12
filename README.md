@@ -22,4 +22,7 @@ and maybe a code block
 ```
 
 ```mermaid
+diagram
+TD
+top --> bottom
 ```
