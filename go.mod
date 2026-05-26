@@ -1,6 +1,6 @@
 module github.com/tkjaer/gallery
 
-go 1.24.1
+go 1.25.0
 
 require (
 	github.com/anthonynsimon/bild v0.14.0
@@ -11,5 +11,5 @@ require (
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	golang.org/x/image v0.18.0 // indirect
+	golang.org/x/image v0.38.0 // indirect
 )
